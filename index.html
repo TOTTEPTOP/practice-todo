@@ -1,12 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <title>To-Do List</title>
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; }
+        input, button { padding: 8px; margin: 5px; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f0f0f0; margin: 5px 0; padding: 10px; display: flex; justify-content: space-between; }
+        nav a { margin-right: 10px; }
+        @media (max-width: 600px) { body { padding: 10px; } }
+    </style>
 </head>
 <body>
+    <nav>
+        <a href="index.html">Главная</a> |
+        <a href="stats.html">Статистика</a> |
+        <a href="about.html">О проекте</a>
+    </nav>
+
     <h1>Мои задачи</h1>
-    <p>Проект в разработке.</p>
-    <script src="js/app.js"></script>
+    <input type="text" id="taskInput" placeholder="Новая задача">
+    <button onclick="addTask()">Добавить</button>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            tasks.forEach((task, i) => {
+                let li = document.createElement('li');
+                li.innerHTML = `
+                    <span style="${task.done ? 'text-decoration:line-through' : ''}">${task.text}</span>
+                    <div>
+                        <button onclick="toggleTask(${i})">✓</button>
+                        <button onclick="deleteTask(${i})">✗</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            let input = document.getElementById('taskInput');
+            if (input.value.trim()) {
+                tasks.push({ text: input.value.trim(), done: false });
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(i) {
+            tasks[i].done = !tasks[i].done;
+            renderTasks();
+        }
+
+        function deleteTask(i) {
+            tasks.splice(i, 1);
+            renderTasks();
+        }
+
+        renderTasks();
+    </script>
 </body>
 </html>
